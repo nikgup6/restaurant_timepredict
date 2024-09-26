@@ -1,0 +1,23 @@
+restaurant_id,restaurant_name,food_item,prep_time,latitude,longitude,order_backlog,time_of_the_day,historical_preparation_time,is_on_route,estimated_time_arrival,user_travel_time,actual_preparation_time
+1,Restaurant A,Biryani,25,17.48182,78.416009,5,Lunch,30,Yes,15,55,30
+2,Restaurant B,Pizza,15,17.495654,78.372145,2,Lunch,20,Yes,20,55,15
+3,Restaurant C,Burger,10,17.498765,78.373654,0,Dinner,12,Yes,25,55,12
+4,Restaurant D,Pasta,20,17.496789,78.370123,1,Dinner,22,No,30,55,22
+5,Restaurant E,Salad,5,17.499876,78.374567,3,Lunch,8,Yes,10,55,8
+6,Restaurant F,Sushi,35,17.48182,78.416009,4,Dinner,40,Yes,50,55,40
+7,Restaurant G,Tacos,15,17.493456,78.375678,6,Lunch,18,Yes,30,55,18
+8,Restaurant H,Steak,45,17.492345,78.376123,1,Dinner,50,Yes,60,55,50
+9,Restaurant I,Sandwich,10,17.491234,78.378901,2,Lunch,15,Yes,20,55,15
+10,Restaurant J,Dumplings,30,17.490123,78.379876,0,Dinner,35,No,40,55,35
+11,Restaurant K,Curry,20,17.488765,78.380123,2,Lunch,25,Yes,35,55,25
+12,Restaurant L,Fried Rice,15,17.487654,78.381234,3,Dinner,20,Yes,25,55,20
+13,Restaurant M,Fish & Chips,30,17.486543,78.382345,1,Lunch,35,Yes,45,55,35
+14,Restaurant N,Wrap,10,17.485432,78.383456,2,Dinner,12,No,20,55,12
+15,Restaurant O,Veggie Bowl,25,17.484321,78.384567,3,Lunch,30,Yes,30,55,30
+16,Restaurant P,Quesadilla,20,17.48321,78.385678,0,Dinner,22,Yes,25,55,22
+17,Restaurant Q,Pad Thai,35,17.482109,78.386789,1,Lunch,40,No,50,55,40
+18,Restaurant R,Gnocchi,30,17.481098,78.38789,5,Dinner,35,Yes,40,55,35
+19,Restaurant S,Chicken Wings,20,17.480987,78.388901,2,Lunch,25,Yes,30,55,25
+20,Restaurant T,Pancakes,10,17.479876,78.389012,1,Dinner,15,Yes,20,55,15
+21,Restaurant U,Cheeseburger,25,17.478765,78.390123,0,Lunch,30,Yes,30,55,30
+22,Restaurant V,Waffles,15,17.477654,78.391234,4,Dinner,20,Yes,25,55,20
