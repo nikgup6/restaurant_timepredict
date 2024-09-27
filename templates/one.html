@@ -73,8 +73,8 @@
         // Create the routing control
         var routingControl = L.Routing.control({
             waypoints: [
-                L.latLng(pickupLocation.lat, pickupLocation.lng),
-                L.latLng(dropLocation.lat, dropLocation.lng)
+                L.latLng(pickupLocation.lat, pickupLocation.lng).bindPopup("Pickup Location"),
+                L.latLng(dropLocation.lat, dropLocation.lng).bindPopup("Drop Location")
             ]}).addTo(map);
 
         
