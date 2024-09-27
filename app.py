@@ -1,13 +1,9 @@
 from flask import Flask, render_template, request, jsonify
-import joblib
 import pandas as pd
 import numpy as np
-import pickle
+import requests
 
 app = Flask(__name__)
-
-# Load the saved model
-model=pickle.load(open('./models/gradient_boosting_model.pkl','rb'))
 
 # Function to calculate distance based on latitude and longitude
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -20,29 +16,47 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     distance = R * c
     return distance
 
+# Function to get latitude and longitude from a location name using Nominatim API
+def get_lat_lon(location_name):
+    response = requests.get(f'https://nominatim.openstreetmap.org/search?q={location_name}&format=json')
+    if response.status_code == 200 and response.json():
+        location = response.json()[0]
+        return float(location['lat']), float(location['lon'])
+    return None, None
+
 @app.route('/')
 def index():
-    return render_template('one.html')  
+    return render_template('one.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Get JSON data from the request
     data = request.get_json()
 
-    # Extract necessary information from the request
     selected_food_item = data.get('food_item')
-    pickup_location = (17.496654, 78.373186)  # Fixed pickup location
+    pickup_location_name = data.get('pickup_location')
+    destination_name = data.get('destination')
 
-    # Load the restaurant data (make sure you provide the correct path)
+    # Get pickup latitude and longitude
+    pickup_lat, pickup_lon = get_lat_lon(pickup_location_name)
+    
+    # Get destination latitude and longitude
+    destination_lat, destination_lon = get_lat_lon(destination_name)
+
+    if pickup_lat is None or pickup_lon is None:
+        return jsonify({'error': 'Invalid pickup location'}), 400
+    
+    if destination_lat is None or destination_lon is None:
+        return jsonify({'error': 'Invalid destination'}), 400
+
+    # Load the restaurant data
     restaurant_data = pd.read_csv('./data/restaurant_data.csv')  # Adjust the path if needed
 
-    # Initialize results
     results = []
 
     for index, row in restaurant_data.iterrows():
-        if row['food_item'].lower() == selected_food_item.lower():  # Case-insensitive match
+        if row['food_item'].lower() == selected_food_item.lower():
             restaurant_location = (row['latitude'], row['longitude'])
-            distance = calculate_distance(pickup_location[0], pickup_location[1], restaurant_location[0], restaurant_location[1])
+            distance = calculate_distance(pickup_lat, pickup_lon, restaurant_location[0], restaurant_location[1])
             
             # Calculate estimated time of arrival (6 minutes per kilometer)
             estimated_arrival_time = distance * 6
@@ -54,8 +68,7 @@ def predict():
                     'estimated_time_of_arrival': estimated_arrival_time
                 })
 
-    # Return the results as JSON
     return jsonify(results)
 
-if __name__ == '__main__':
+if __name__ == '_main_':
     app.run(debug=True)

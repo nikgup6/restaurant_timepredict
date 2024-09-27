@@ -3,114 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Route Example with OpenStreetMap and OSRM</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
-    <style>
-        #map {
-            height: 60vh; /* Set map height to 60% of the viewport height */
-            width: 100%;
-        }
-        #input-container {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #ddd;
-        }
-        #results {
-            margin-top: 10px;
-        }
-    </style>
+    <title>Food Delivery Prediction</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <div id="map"></div>
-    <pre>Menu:
-        Biryani
-        Pizza
-        Burger
-        Pasta
-        Salad
-        Sushi
-        Tacos
-        Steak
-        Sandwich
-        Dumplings
-        Curry
-        Fried Rice
-        Fish & Chips
-        Wrap
-        Veggie Bowl
-        Quesadilla
-        Pad Thai
-        Gnocchi
-        Chicken Wings
-        Pancakes
-        Cheeseburger
-        Waffles
-        </pre>
+    <h1>Order Food</h1>
+    <label for="food_item">Select Food Item:</label>
+    <input type="text" id="food_item" placeholder="e.g., Biryani"><br>
 
-    <form id="input-container">
-        <h2>Food Item Search</h2>
-        <input type="text" id="food-item" placeholder="Enter food item" />
-        <button id="search-button">Search</button>
-        <div id="results"></div>
-    </form>
+    <label for="pickup_location">Pickup Location (e.g., IIIT Hyderabad):</label>
+    <input type="text" id="pickup_location" placeholder="Enter pickup location"><br>
 
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <label for="destination">Destination (e.g., Hyderabad):</label>
+    <input type="text" id="destination" placeholder="Enter destination"><br>
+
+    <button id="predict">Check Restaurants</button>
+
+    <div id="results"></div>
+
     <script>
-        // Initialize the map and set its view to the pickup location
-        var map = L.map('map').setView([17.496654, 78.373186], 13);
+        $(document).ready(function() {
+            $('#predict').click(function() {
+                const foodItem = $('#food_item').val();
+                const pickupLocation = $('#pickup_location').val();
+                const destination = $('#destination').val();
 
-        // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-        }).addTo(map);
-
-        // Define pickup and drop locations
-        var pickupLocation = { lat: 17.496654, lng: 78.373186 };
-        var dropLocation = { lat: 17.476305, lng: 78.423027 };
-
-        // Create the routing control
-        var routingControl = L.Routing.control({
-            waypoints: [
-                L.latLng(pickupLocation.lat, pickupLocation.lng),
-                L.latLng(dropLocation.lat, dropLocation.lng)
-            ]}).addTo(map);
-
-        
-
-        // Function to fetch restaurant data based on food item input
-        document.getElementById('search-button').addEventListener('click', function() {
-            event.preventDefault(); 
-            var foodItem = document.getElementById('food-item').value;
-
-            // Make a POST request to the Flask backend
-            fetch('http://127.0.0.1:5000/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ food_item: foodItem })
-            })
-            .then(response => response.json())
-            .then(data => {
-                var resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = ''; 
-
-                if (data.length > 0) {
-                    data.forEach(item => {
-                        alert(resultsDiv.innerHTML += `<p>Restaurant: ${item.restaurant_name}, Estimated Time of Arrival: ${item.estimated_time_of_arrival.toFixed(2)} minutes</p>`) ;
-                        var restaurantLocation = { lat: 17.481820, lng: 78.416009 };
-                        var restaurantMarker = L.marker([restaurantLocation.lat, restaurantLocation.lng]).addTo(map);
-                        restaurantMarker.bindPopup('<b>Restaurant V</b><br>Specially known for their tasty waffles.').openPopup();
-                     });
-                } else {
-                    resultsDiv.innerHTML = '<p>No restaurants found.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('There was an error fetching the restaurant data. Please try again later.');
+                $.ajax({
+                    url: '/predict',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ food_item: foodItem, pickup_location: pickupLocation, destination: destination }),
+                    success: function(data) {
+                        $('#results').empty();
+                        if (data.length > 0) {
+                            data.forEach(function(item) {
+                                $('#results').append(<p>${item.restaurant_name}: Estimated Arrival Time: ${item.estimated_time_of_arrival.toFixed(2)} minutes</p>);
+                            });
+                        } else {
+                            $('#results').append("<p>No restaurants found for this item.</p>");
+                        }
+                    },
+                    error: function(error) {
+                        $('#results').empty();
+                        $('#results').append(<p>Error: ${error.responseJSON.error}</p>);
+                    }
+                });
             });
         });
     </script>
